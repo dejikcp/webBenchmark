@@ -1,4 +1,4 @@
-module github.com/maintell/webBenchmark
+module github.com/dejikcp/webBenchmark
 
 go 1.16
 
