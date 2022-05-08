@@ -4,7 +4,7 @@ http benchmark tool to ran out your server bandwidth.
 用户在使用本工具前请先查看授权及免责声明，webBenchmark仅仅是一个用于测试网页服务器性能的工具，用作其他用途，后果自负。
 
 - random User-Agent on every Request
-- customizable Referer Url,
+- customizable Referer Url,123
 - customizable header,
 - concurrent routines as you wish, depends on you server performance.
 - http post mode
