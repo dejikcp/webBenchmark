@@ -1,63 +1,32 @@
-name: Release X-ui
+name: Go
+
 on:
   push:
-    tags:
-      - 0.*
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: true
-  linuxs390xbuild:
-    name: build x-ui s390x version
-    needs: release
+
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.18
-      - name: build linux s390x version
-        run: |
-          sudo apt-get update
-          sudo apt install gcc-s390x-linux-gnu -y
-          CGO_ENABLED=1 GOOS=linux GOARCH=s390x CC=s390x-linux-gnu-gcc go build -o xui-release -v main.go
-          mkdir x-ui
-          cp xui-release x-ui/xui-release
-          cp x-ui.service x-ui/x-ui.service
-          cp x-ui.sh x-ui/x-ui.sh
-          cd x-ui
-          mv xui-release x-ui
-          mkdir bin
-          cd bin
-          wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-s390x.zip
-          unzip Xray-linux-s390x.zip
-          rm -f Xray-linux-s390x.zip geoip.dat geosite.dat
-          wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
-          wget https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-          mv xray xray-linux-s390x
-          cd ..
-          cd ..
-      - name: package
-        run: tar -zcvf x-ui-linux-s390x.tar.gz x-ui
-      - name: upload
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GAYHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: x-ui-linux-s390x.tar.gz
-          asset_name: x-ui-linux-s390x.tar.gz
-          asset_content_type: application/gzip
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build
+      run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o wb.exe main.go
+
+    - name: Release
+      uses: softprops/action-gh-release@v0.1.14
+      with:
+        tag_name: v${{ steps.date.outputs.date }}
+        files: | 
+            wb.exe
