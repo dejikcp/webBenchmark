@@ -15,6 +15,7 @@ jobs:
         go-version: 1.18
     - name: Build
       run: 
-        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o wb.exe main.go
-        
+        sudo apt-get update
+        sudo apt install gcc-x86-64-windows-gnu
+        CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -o wb.exe -v main.go        
 
