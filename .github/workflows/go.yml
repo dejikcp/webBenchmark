@@ -16,6 +16,5 @@ jobs:
     - name: Build
       run: 
         sudo apt-get update
-        sudo apt install gcc-x86-64-windows-gnu
-        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o wb.exe -v main.go        
+        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o wb.exe main.go        
 
